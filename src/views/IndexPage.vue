@@ -55,10 +55,10 @@
 
 /* CSS fallbacks simulating the images for the PWA showcase */
 .hajari-bg {
-  background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, #171c26), url('https://images.unsplash.com/photo-1541812678822-799ff6dbab57?auto=format&fit=crop&q=80&w=800');
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, #171c26), url('../assets/hajari_img.png');
 }
 
 .fish-bg {
-  background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, #171c26), url('https://images.unsplash.com/photo-1524704654690-b56c05c78a00?auto=format&fit=crop&q=80&w=800');
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0) 60%, #171c26), url('../assets/fish_img.png');
 }
 </style>

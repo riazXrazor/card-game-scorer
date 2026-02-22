@@ -57,15 +57,21 @@
         </template>
         
         <template v-else-if="route.name === 'fish'">
-          <q-route-tab name="scores" icon="bar_chart" label="SCORES" class="nav-tab text-caption text-weight-bold text-primary" />
+          <!-- <q-route-tab name="scores" icon="bar_chart" label="SCORES" class="nav-tab text-caption text-weight-bold text-primary" />
           <q-route-tab name="games" icon="history" label="GAMES" class="nav-tab text-caption text-weight-bold" />
-          <q-route-tab name="rules" icon="menu_book" label="RULES" class="nav-tab text-caption text-weight-bold" />
+          <q-route-tab name="rules" icon="menu_book" label="RULES" class="nav-tab text-caption text-weight-bold" /> -->
+           <q-route-tab name="home" icon="home" label="HOME" to="/" class="nav-tab text-caption text-weight-bold" />
+          <q-route-tab name="history" icon="history" label="HISTORY" class="nav-tab text-caption text-weight-bold" />
+          <q-route-tab name="settings" icon="settings" label="SETTINGS" class="nav-tab text-caption text-weight-bold" />
         </template>
 
         <template v-else-if="route.name === 'hajari'">
-          <q-route-tab name="game" icon="bar_chart" label="GAME" class="nav-tab text-caption text-weight-bold text-primary" />
+          <!-- <q-route-tab name="game" icon="bar_chart" label="GAME" class="nav-tab text-caption text-weight-bold text-primary" />
           <q-route-tab name="history" icon="history" label="HISTORY" class="nav-tab text-caption text-weight-bold" />
           <q-route-tab name="players" icon="group" label="PLAYERS" class="nav-tab text-caption text-weight-bold" />
+          <q-route-tab name="settings" icon="settings" label="SETTINGS" class="nav-tab text-caption text-weight-bold" /> -->
+           <q-route-tab name="home" icon="home" label="HOME" to="/" class="nav-tab text-caption text-weight-bold" />
+          <q-route-tab name="history" icon="history" label="HISTORY" class="nav-tab text-caption text-weight-bold" />
           <q-route-tab name="settings" icon="settings" label="SETTINGS" class="nav-tab text-caption text-weight-bold" />
         </template>
         
@@ -106,6 +112,7 @@ html, body {
   margin: 0 auto;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .bg-dark { background-color: #121827 !important; }

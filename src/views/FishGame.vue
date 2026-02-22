@@ -165,8 +165,6 @@ const resetGame = () => {
 .current-round-highlight {
   background-color: rgba(29, 78, 216, 0.1);
   border: 1px solid rgba(29, 78, 216, 0.3);
-  margin-left: -8px;
-  margin-right: -8px;
 }
 
 .score-input :deep(.q-field__control) {
