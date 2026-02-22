@@ -4,17 +4,19 @@
     <div class="q-mb-md">
       <div class="row justify-between items-center text-caption text-weight-bold text-grey-5 q-mb-sm text-uppercase" style="letter-spacing: 0.5px">
         <span>Game Progress</span>
-        <span class="text-primary">Round {{ currentRound }} of {{ totalRounds }}</span>
+        <span class="text-primary" v-if="!gameStore.winnerId">Round {{ currentRound }} of {{ totalRounds }}</span>
+        <span class="text-positive" v-else>Game Over</span>
       </div>
-      <q-linear-progress :value="currentRound / totalRounds" color="primary" track-color="dark-lighter" size="4px" />
+      <q-linear-progress :value="currentRound / totalRounds" :color="gameStore.winnerId ? 'positive' : 'primary'" track-color="dark-lighter" size="4px" />
     </div>
 
     <!-- Player Totals -->
     <div class="row q-col-gutter-sm q-mb-lg">
-      <div class="col-3" v-for="(player, index) in players" :key="'p'+index">
-        <q-card class="bg-card q-py-sm q-px-xs text-center border-radius-lg" flat bordered style="border-color: rgba(255,255,255,0.05)">
-          <div class="text-caption text-weight-bold text-grey-5">{{ player.initial }}</div>
-          <div class="text-h6 text-weight-bolder" :class="index === 0 ? 'text-primary' : 'text-grey-3'">{{ getTotal(index) }}</div>
+      <div class="col-3" v-for="player in gameStore.players" :key="'p'+player.id">
+        <q-card class="bg-card q-py-sm q-px-xs text-center border-radius-lg" flat bordered :style="`border-color: ${gameStore.winnerId === player.id ? '#21ba45' : 'rgba(255,255,255,0.05)'}`">
+           <q-icon v-if="gameStore.winnerId === player.id" name="emoji_events" color="positive" size="xs" class="q-mb-xs" />
+          <div class="text-caption text-weight-bold text-grey-5" v-else>{{ player.initial }}</div>
+          <div class="text-h6 text-weight-bolder" :class="gameStore.winnerId === player.id ? 'text-positive' : 'text-grey-3'">{{ getTotal(player.id) }}</div>
         </q-card>
       </div>
     </div>
@@ -33,23 +35,23 @@
         <!-- Past and Current Rounds -->
         <div v-for="roundNum in totalRounds" :key="'r'+roundNum" 
              class="row items-center text-center q-py-sm border-radius-lg relative-position"
-             :class="{'current-round-highlight': roundNum === currentRound, 'q-px-sm': roundNum === currentRound}">
+             :class="{'current-round-highlight': roundNum === currentRound && !gameStore.winnerId, 'q-px-sm': roundNum === currentRound && !gameStore.winnerId}">
              
-          <div class="col-2 text-left text-weight-bold" :class="roundNum === currentRound ? 'text-primary' : (roundNum > currentRound ? 'text-grey-7' : 'text-grey-5')">
+          <div class="col-2 text-left text-weight-bold" :class="(roundNum === currentRound && !gameStore.winnerId) ? 'text-primary' : (roundNum > currentRound ? 'text-grey-7' : 'text-grey-5')">
             {{ roundNum }}
           </div>
           
           <div class="col-10 row justify-around">
-            <template v-if="roundNum < currentRound">
-              <div class="col-2 text-weight-bold text-grey-3" v-for="(player, pIndex) in players" :key="'rs'+pIndex">
-                {{ getScore(roundNum, pIndex) }}
+            <template v-if="roundNum < currentRound || (roundNum === currentRound && gameStore.winnerId)">
+              <div class="col-2 text-weight-bold text-grey-3" v-for="player in gameStore.players" :key="'rs'+player.id">
+                {{ getScore(roundNum, player.id) }}
               </div>
             </template>
             
-            <template v-else-if="roundNum === currentRound">
-              <div class="col-2" v-for="(player, pIndex) in players" :key="'ri'+pIndex">
+            <template v-else-if="roundNum === currentRound && !gameStore.winnerId">
+              <div class="col-2" v-for="player in gameStore.players" :key="'ri'+player.id">
                 <q-input 
-                  v-model.number="currentInput[pIndex]" 
+                  v-model.number="currentInput[player.id]" 
                   type="number" 
                   dense 
                   outlined 
@@ -62,7 +64,7 @@
             </template>
             
             <template v-else>
-               <div class="col-2" v-for="(player, pIndex) in players" :key="'re'+pIndex">
+               <div class="col-2" v-for="player in gameStore.players" :key="'re'+player.id">
                 <div class="empty-score-box"></div>
               </div>
             </template>
@@ -74,61 +76,83 @@
     <!-- Fixed Bottom Actions -->
     <div class="fixed-bottom q-pa-md row items-center no-wrap z-max" style="bottom: 60px;">
       <q-btn 
+        v-if="!gameStore.winnerId"
         unelevated 
         color="primary" 
         class="col q-py-sm q-mr-sm text-weight-bold" 
         style="border-radius: 12px; font-size: 1.05rem;"
+        @click="saveRound"
       >
         <q-icon name="save" size="xs" class="q-mr-sm" />
         Save Round {{ currentRound }}
       </q-btn>
       <q-btn 
-        fab
-        color="primary" 
-        icon="add"
-        class="shadow-10"
-        style="border-radius: 50%;"
-      />
+         v-else
+        unelevated 
+        color="positive" 
+        class="col q-py-sm q-mr-sm text-weight-bold" 
+        style="border-radius: 12px; font-size: 1.05rem;"
+        @click="resetGame"
+      >
+        <q-icon name="refresh" size="xs" class="q-mr-sm" />
+        New Game
+      </q-btn>
     </div>
 
   </q-page>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useGameStore } from '../store/game'
 
-const totalRounds = 6 // Showing 6 based on SC, total is 8 but typically scrollable
-const currentRound = ref(3)
+const gameStore = useGameStore()
+const totalRounds = 8
 
-const players = ref([
-  { initial: 'P1' },
-  { initial: 'P2' },
-  { initial: 'P3' },
-  { initial: 'P4' }
-])
+onMounted(() => {
+  gameStore.startGame('fish')
+})
 
-// Mock historical scores
-const historicalScores = ref([
-  [45, 32, 50, 28], // Round 1
-  [62, 41, 35, 44]  // Round 2
-])
+const currentRound = computed(() => {
+  return Math.min(gameStore.rounds.length + 1, totalRounds)
+})
 
-// Current round inputs
-const currentInput = ref([35, 0, 0, 0]) // P1 has 35 already entered as per SS
+// Current round inputs mapped directly to player IDs
+const currentInput = ref({
+  1: 0,
+  2: 0,
+  3: 0,
+  4: 0
+})
 
-const getScore = (round, playerIndex) => {
-  if (round - 1 < historicalScores.value.length) {
-    return historicalScores.value[round - 1][playerIndex]
+const getScore = (roundNum, playerId) => {
+  const round = gameStore.rounds.find(r => r.roundNum === roundNum)
+  if (round) {
+    return round.scores[playerId]
   }
   return ''
 }
 
-const getTotal = (playerIndex) => {
-  let total = historicalScores.value.reduce((acc, roundScores) => acc + roundScores[playerIndex], 0)
-  if (currentRound.value > historicalScores.value.length) {
-     total += (currentInput.value[playerIndex] || 0)
-  }
-  return total
+const getTotal = (playerId) => {
+  return gameStore.totalScores[playerId]
+}
+
+const saveRound = () => {
+  // Pass scores as array matching player id 1, 2, 3, 4 index
+  gameStore.saveRound([
+    currentInput.value[1],
+    currentInput.value[2],
+    currentInput.value[3],
+    currentInput.value[4]
+  ])
+
+  // Reset inputs
+  currentInput.value = { 1: 0, 2: 0, 3: 0, 4: 0 }
+}
+
+const resetGame = () => {
+  gameStore.currentGame = null
+  gameStore.startGame('fish')
 }
 </script>
 
