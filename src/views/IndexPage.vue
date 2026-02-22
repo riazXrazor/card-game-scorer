@@ -16,7 +16,7 @@
           <p class="text-caption text-grey-5 q-mb-md" style="line-height: 1.4">Classic card game of strategy and high-stakes skill.</p>
           
           <div class="row items-center justify-center">
-            <q-btn unelevated color="primary" class="q-px-md q-py-xs" style="border-radius: 8px; font-weight: 600" to="/hajari" no-caps>
+            <q-btn unelevated color="primary" class="q-px-md q-py-xs" style="border-radius: 8px; font-weight: 600" @click="$router.push('/setup?game=hajari')" no-caps>
               Play Now <q-icon name="play_arrow" size="18px" class="q-ml-xs" />
             </q-btn>
           </div>
@@ -32,7 +32,7 @@
           <p class="text-caption text-grey-5 q-mb-md" style="line-height: 1.4">The ultimate fast-paced card matching tournament.</p>
           
           <div class="row items-center justify-center">
-            <q-btn unelevated color="primary" class="q-px-md q-py-xs" style="border-radius: 8px; font-weight: 600" to="/fish" no-caps>
+            <q-btn unelevated color="primary" class="q-px-md q-py-xs" style="border-radius: 8px; font-weight: 600" @click="$router.push('/setup?game=fish')" no-caps>
               Play Now <q-icon name="play_arrow" size="18px" class="q-ml-xs" />
             </q-btn>
           </div>

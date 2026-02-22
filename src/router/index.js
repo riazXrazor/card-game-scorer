@@ -9,6 +9,11 @@ const router = createRouter({
             component: () => import('../views/IndexPage.vue')
         },
         {
+            path: '/setup',
+            name: 'setup',
+            component: () => import('../views/PlayerSetup.vue')
+        },
+        {
             path: '/fish',
             name: 'fish',
             component: () => import('../views/FishGame.vue')
