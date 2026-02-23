@@ -50,7 +50,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { useGameStore } from '../store/game'
+import { useGameStore } from '../stores/game'
 
 const router = useRouter()
 const route = useRoute()

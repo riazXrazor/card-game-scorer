@@ -104,7 +104,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useGameStore } from '../store/game'
+import { useGameStore } from '../stores/game'
 
 const gameStore = useGameStore()
 const totalRounds = 8
