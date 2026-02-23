@@ -38,12 +38,11 @@ export default configure(function (/* ctx */) {
             swFilename: 'sw.js',
             manifestFilename: 'manifest.json',
             useCredentialsForManifestTag: false,
-            // Add explicit caching and install behaviors for iOS Workbox support
-            workboxOptions: {
-                skipWaiting: true,
-                clientsClaim: true,
-                navigateFallback: '/index.html',
-                navigateFallbackDenylist: [/^\/api\//]
+            extendGenerateSWOptions(cfg) {
+                cfg.skipWaiting = true;
+                cfg.clientsClaim = true;
+                cfg.navigateFallback = '/index.html';
+                cfg.navigateFallbackDenylist = [/^\/api\//];
             },
             manifest: {
                 name: 'Card Game Scorer',
