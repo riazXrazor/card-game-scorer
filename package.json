@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "quasar dev",
+    "dev": "quasar dev -m pwa",
     "build": "quasar build -m pwa"
   },
   "dependencies": {
