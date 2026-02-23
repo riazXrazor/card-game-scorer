@@ -32,6 +32,23 @@
     </q-header>
 
     <q-page-container class="bg-dark-page">
+      <!-- PWA Install Banner -->
+      <q-banner
+        v-if="showInstallBanner"
+        inline-actions
+        class="bg-primary text-white q-mt-sm q-mx-sm rounded-borders"
+      >
+        <template v-slot:avatar>
+          <q-icon name="get_app" color="white" />
+        </template>
+        Install Card Scorer for offline use and quick access!
+        
+        <template v-slot:action>
+          <q-btn flat dense color="white" label="Dismiss" @click="dismissInstall" class="q-px-sm" />
+          <q-btn color="dark" label="Install" @click="installApp" class="q-ml-sm q-px-sm" />
+        </template>
+      </q-banner>
+
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
@@ -82,11 +99,48 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const tab = ref('home')
+
+const deferredPrompt = ref(null)
+const showInstallBanner = ref(false)
+
+onMounted(() => {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome 67 and earlier from automatically showing the prompt
+    e.preventDefault()
+    // Stash the event so it can be triggered later.
+    deferredPrompt.value = e
+    // Update UI notify the user they can add to home screen
+    showInstallBanner.value = true
+  })
+})
+
+const installApp = async () => {
+  showInstallBanner.value = false
+  if (!deferredPrompt.value) return
+  
+  // Show the install prompt
+  deferredPrompt.value.prompt()
+  
+  // Wait for the user to respond to the prompt
+  const { outcome } = await deferredPrompt.value.userChoice
+  if (outcome === 'accepted') {
+    // console.log('User accepted the install prompt')
+  } else {
+    // console.log('User dismissed the install prompt')
+  }
+  
+  // We've used the prompt, and can't use it again, throw it away
+  deferredPrompt.value = null
+}
+
+const dismissInstall = () => {
+  showInstallBanner.value = false
+}
 
 const appTitle = computed(() => {
   if (route.name === 'home') return 'Choose Your Game'
