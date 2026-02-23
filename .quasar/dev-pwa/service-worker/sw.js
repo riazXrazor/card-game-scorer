@@ -3317,7 +3317,7 @@ precacheAndRoute([{
   "revision": "6a02faf7ea2a9584134ffe15779a0e44"
 }, {
   "url": "pwa-512x512.png",
-  "revision": "d4c353c64fda52925e9eb33f16cf1a44"
+  "revision": "504b3e8bd0aa6c6fe7272b85c758132f"
 }, {
   "url": "pwa-192x192.png",
   "revision": "82cd9721e4966b6d307918a8c14208fe"
