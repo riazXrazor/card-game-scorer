@@ -32,7 +32,23 @@
     </q-header>
 
     <q-page-container class="bg-dark-page">
-      <!-- PWA Install Banner -->
+      <!-- iOS Install Banner -->
+      <q-banner
+        v-if="showIosInstallMessage"
+        inline-actions
+        class="bg-info text-white q-mt-sm q-mx-sm rounded-borders"
+      >
+        <template v-slot:avatar>
+          <q-icon name="apple" color="white" />
+        </template>
+        Install this app on your iPhone: tap <q-icon name="ios_share" size="sm" /> and then <b>Add to Home Screen</b>.
+        
+        <template v-slot:action>
+          <q-btn flat dense color="white" label="Dismiss" @click="dismissInstall" class="q-px-sm" />
+        </template>
+      </q-banner>
+
+      <!-- PWA Install Banner (Android/Desktop) -->
       <q-banner
         v-if="showInstallBanner"
         inline-actions
@@ -108,7 +124,24 @@ const tab = ref('home')
 const deferredPrompt = ref(null)
 const showInstallBanner = ref(false)
 
+// iOS Specific Handling
+const isIos = ref(false)
+const showIosInstallMessage = ref(false)
+
 onMounted(() => {
+  // Check if it's an iOS device
+  const userAgent = window.navigator.userAgent.toLowerCase()
+  const isIosDevice = /iphone|ipad|ipod/.test(userAgent)
+  
+  // Check if it's already installed (standalone mode)
+  const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches
+  
+  if (isIosDevice && !isStandalone) {
+    isIos.value = true
+    showIosInstallMessage.value = true
+  }
+
+  // Handle standard beforeinstallprompt for Android/Desktop
   window.addEventListener('beforeinstallprompt', (e) => {
     // Prevent Chrome 67 and earlier from automatically showing the prompt
     e.preventDefault()
@@ -140,6 +173,7 @@ const installApp = async () => {
 
 const dismissInstall = () => {
   showInstallBanner.value = false
+  showIosInstallMessage.value = false
 }
 
 const appTitle = computed(() => {
